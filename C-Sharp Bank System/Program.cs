@@ -249,6 +249,11 @@ namespace BankSystem
                         break;
 
                     case 2:
+                        if (bank.Count == 0)
+                        {
+                            Console.WriteLine("\nBank don't have any accounts.\n");
+                            break;
+                        }
                         Console.Write("\nEnter name: ");
                         string nameCheck = Console.ReadLine();
                            
@@ -259,10 +264,7 @@ namespace BankSystem
                         bool accountChecker = true;
 
 
-                        if (bank.Count == 0)
-                        {
-                            Console.WriteLine("Bank don't have any accounts");
-                        }
+                        
 
                         for (int ix = 0; ix < bank.Count; ix++)
                         {                           
