@@ -1,4 +1,6 @@
-﻿namespace BankSystem
+﻿using System.Net;
+
+namespace BankSystem
 {
     class Account
     {
@@ -145,10 +147,14 @@
                 Console.WriteLine("You don't have any credit.");
             return 0;
         }
-        public void TransferToOtherUser()
+
+        public void SetRecipientName()
         {
             Console.Write("\nEnter recipient's name: ");
             this.userNameToTransfer = Console.ReadLine();
+        }
+        public void TransferToOtherUser()
+        {       
             Console.Write("Enter Amount: ");
             this.transferAmount = Convert.ToDouble(Console.ReadLine());
 
@@ -376,7 +382,32 @@
                                                 {
                                                     DateTime dateTime = DateTime.Now;
 
-                                                    bank[accNum].TransferToOtherUser();
+                                                    bool userTransferNameCheck = false;
+
+                                                    do
+                                                    {
+                                                        bank[accNum].SetRecipientName();                                                        
+                                                        
+                                                        for (int ixUser = 0; ixUser < bank.Count; ixUser++)
+                                                        {
+                                                            if (bank[ixUser].setName == bank[accNum].userNameToTransfer)
+                                                            {
+                                                                userTransferNameCheck = true;
+                                                            }
+                                                        }
+                                                        if(userTransferNameCheck == false)
+                                                        {
+                                                            Console.WriteLine("Account with that name don't exist! Enter other account name. Enter 'quit' to quit.");
+                                                        }
+                                                        else if(bank[accNum].setName == bank[accNum].userNameToTransfer)
+                                                        {
+                                                            Console.WriteLine("You can't transfer money to Yourself! Enter other account name.");
+                                                            userTransferNameCheck = false;
+                                                        }                                                        
+                                                     } while (userTransferNameCheck == false);
+
+                                                    bank[accNum].TransferToOtherUser();                                                       
+
                                                     if (bank[accNum].transferAction == true)
                                                     {
                                                         int accUserNum = -1;
