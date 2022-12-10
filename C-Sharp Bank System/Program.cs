@@ -216,7 +216,7 @@
                     case 2:
                         if (bank.Count == 0)
                         {
-                            Console.WriteLine("\n Bank don't have any accounts \n");
+                            Console.WriteLine("\nBank don't have any accounts \n");
                             break;
                         }
 
