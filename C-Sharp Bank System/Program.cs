@@ -1,4 +1,6 @@
-﻿namespace BankSystem
+﻿using System.Net;
+
+namespace BankSystem
 {
     class Account
     {
@@ -16,13 +18,13 @@
         public bool userIsLogged = false;
         public bool transferAction = false;
 
-        public Account(double balance, string setName, string setPassword, double Credit, bool CreditCheck)
+        public Account(double balance, string setName, string setPassword, double Credit, bool creditCheck)
         {
             this.balance = 0;
             this.setName = setName;
             this.setPassword = setPassword;
             this.credit = 0;
-            this.creditCheck = CreditCheck;
+            this.creditCheck = creditCheck;
         }
         public void Deposit()
         {
@@ -145,10 +147,14 @@
                 Console.WriteLine("You don't have any credit.");
             return 0;
         }
-        public void TransferToOtherUser()
+
+        public void SetRecipientName()
         {
             Console.Write("\nEnter recipient's name: ");
             this.userNameToTransfer = Console.ReadLine();
+        }
+        public void TransferToOtherUser()
+        {       
             Console.Write("Enter Amount: ");
             this.transferAmount = Convert.ToDouble(Console.ReadLine());
 
@@ -172,14 +178,24 @@
                 transferAction = true;
             }
         }
+
+        public override string ToString()
+        {
+            return " ";
+        }
     }
     class Bank : Account
     {
         //Pola klasy
         public bool accountBlock = false;
-        public Bank(double balance, string setName, string setPassword, bool accountBlock, double Credit, bool CreditCheck) : base(balance, setName, setPassword, Credit, CreditCheck)
+        public Bank(double balance, string setName, string setPassword, bool accountBlock, double credit, bool creditCheck) : base(balance, setName, setPassword, credit, creditCheck)
         {
             this.accountBlock = accountBlock;
+        }
+
+        public override string ToString()
+        {
+            return ". Name: " + setName + ", Password: "+ setPassword + ", Balance: " + balance + ", Account Block(true=blocked): " + accountBlock + ", Credit(true=the credit has been taken): " + creditCheck;
         }
     }
     class Program
@@ -202,8 +218,27 @@
                 switch (menuChoose)
                 {
                     case 1:
-                        Console.Write("\nEnter name: ");
-                        string setName = Console.ReadLine();
+                        string setName;
+                        bool nameDuplicatCheck = false;
+
+                        do
+                        {
+                            nameDuplicatCheck = false;
+                            Console.Write("\nEnter name: ");
+                            setName = Console.ReadLine();
+                            foreach (Bank banks in bank)
+                            {
+                                if (banks.setName == setName)
+                                {
+                                    Console.WriteLine("Name already exist - enter other name!");
+                                    nameDuplicatCheck = true;
+                                    break;
+                                }
+                            }
+                        } while (nameDuplicatCheck == true);
+                        
+                        //Console.Write("\nEnter name: ");
+                        //string setName = Console.ReadLine();
                         Console.Write("Enter password: ");
                         string setPassword = Console.ReadLine();
                         double balanceSettoZero = 0;
@@ -214,14 +249,10 @@
                         break;
 
                     case 2:
-                        if (bank.Count == 0)
-                        {
-                            Console.WriteLine("\nBank don't have any accounts \n");
-                            break;
-                        }
-
                         Console.Write("\nEnter name: ");
                         string nameCheck = Console.ReadLine();
+                           
+                        
                         Console.Write("Enter password: ");
                         string passowrdCheck = Console.ReadLine();
 
@@ -351,7 +382,32 @@
                                                 {
                                                     DateTime dateTime = DateTime.Now;
 
-                                                    bank[accNum].TransferToOtherUser();
+                                                    bool userTransferNameCheck = false;
+
+                                                    do
+                                                    {
+                                                        bank[accNum].SetRecipientName();                                                        
+                                                        
+                                                        for (int ixUser = 0; ixUser < bank.Count; ixUser++)
+                                                        {
+                                                            if (bank[ixUser].setName == bank[accNum].userNameToTransfer)
+                                                            {
+                                                                userTransferNameCheck = true;
+                                                            }
+                                                        }
+                                                        if(userTransferNameCheck == false)
+                                                        {
+                                                            Console.WriteLine("Account with that name don't exist! Enter other account name. Enter 'quit' to quit.");
+                                                        }
+                                                        else if(bank[accNum].setName == bank[accNum].userNameToTransfer)
+                                                        {
+                                                            Console.WriteLine("You can't transfer money to Yourself! Enter other account name.");
+                                                            userTransferNameCheck = false;
+                                                        }                                                        
+                                                     } while (userTransferNameCheck == false);
+
+                                                    bank[accNum].TransferToOtherUser();                                                       
+
                                                     if (bank[accNum].transferAction == true)
                                                     {
                                                         int accUserNum = -1;
@@ -466,7 +522,7 @@
                             adminMenuquit = true;
                             do
                             {
-                                Console.WriteLine("\nYou are in Admin Menu!\nPress 1. To lock user account\nPress 2. To unlock user account\nPress 3. To quit.");
+                                Console.WriteLine("\nYou are in Admin Menu!\nPress 1. To lock user account\nPress 2. To unlock user accountn\nPress 3. To print all bank accounts\nPress 4. To quit.");
                                 int adminChoose = Convert.ToInt32(Console.ReadLine());
 
                                 switch (adminChoose)
@@ -550,6 +606,19 @@
                                         break;
 
                                     case 3:
+                                        {
+                                            int x = 1;
+                                            foreach(Bank banks in bank)
+                                            {
+                                                Console.Write(x);
+                                                x++;
+                                                Console.WriteLine(banks.ToString());
+                                            }
+                                        }
+
+                                        break;
+
+                                    case 4:
                                         {
                                             adminMenuquit = false;
                                         }
