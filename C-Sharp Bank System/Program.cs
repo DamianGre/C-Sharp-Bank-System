@@ -214,6 +214,12 @@
                         break;
 
                     case 2:
+                        if (bank.Count == 0)
+                        {
+                            Console.WriteLine("\n Bank don't have any accounts \n");
+                            break;
+                        }
+
                         Console.Write("\nEnter name: ");
                         string nameCheck = Console.ReadLine();
                         Console.Write("Enter password: ");
