@@ -482,11 +482,9 @@ namespace BankSystem
                                                 }
                                                 if (accNum != -1)
                                                 {
-                                                    bank[accNum].Creditpayment();
+                                                    bank[accNum].userIsLogged = false;
                                                 }
-                                                loginMenu = false;
-
-                                                bank[accNum].userIsLogged = false;
+                                                loginMenu = false;                                             
                                             }
                                             break;
                                     }
