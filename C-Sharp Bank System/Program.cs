@@ -337,7 +337,7 @@ namespace BankSystem
                     }
                     if (userTransferNameCheck == false)
                     {
-                        Console.WriteLine("Account with that name don't exist! Enter other account name. Enter 'quit' to quit.");
+                        Console.WriteLine("Account with that name don't exist! Enter other account name.");
                     }
                     else if (bank[accNum].setName == bank[accNum].userNameToTransfer)
                     {
