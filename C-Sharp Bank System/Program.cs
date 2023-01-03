@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 
 namespace BankSystem
 {
@@ -154,7 +155,7 @@ namespace BankSystem
             this.userNameToTransfer = Console.ReadLine();
         }
         public void TransferToOtherUser()
-        {       
+        {
             Console.Write("Enter Amount: ");
             this.transferAmount = Convert.ToDouble(Console.ReadLine());
 
@@ -193,11 +194,211 @@ namespace BankSystem
             this.accountBlock = accountBlock;
         }
 
+        public void ListShuffelPlusCreditPayment(List<Bank> bank, string nameCheck, int accNum)
+        {
+            for (int ix = 0; ix < bank.Count; ix++)
+            {
+                if (bank[ix].setName == nameCheck)
+                {
+                    accNum = ix;
+                }
+            }
+            if (accNum != -1)
+            {
+                bank[accNum].Creditpayment();
+            }
+
+        }
+        public void ListShuffelPlusLogOut(List<Bank> bank, string nameCheck, int accNum)
+        {
+            for (int ix = 0; ix < bank.Count; ix++)
+            {
+                if (bank[ix].setName == nameCheck)
+                {
+                    accNum = ix;
+                }
+            }
+            if (accNum != -1)
+            {
+                bank[accNum].userIsLogged = false;
+            }
+        }
+
+        public void ListShuffelPlusCreditTake(List<Bank> bank, string nameCheck, int accNum)
+        {
+            for (int ix = 0; ix < bank.Count; ix++)
+            {
+                if (bank[ix].setName == nameCheck)
+                {
+                    accNum = ix;
+                }
+            }
+            if (accNum != -1)
+            {
+                bank[accNum].Credit();
+            }
+        }       
+
+        public void ListShuffelPlusHistory(List<Bank> bank, string nameCheck, int accNum)
+        {
+            for (int ix = 0; ix < bank.Count; ix++)
+            {
+                if (bank[ix].setName == nameCheck)
+                {
+                    accNum = ix;
+                }
+            }
+            if (accNum != -1)
+            {
+                bank[accNum].History();
+            }
+        }
+
+        public void ListShuffelPlusBalanceGet(List<Bank> bank, string nameCheck, int accNum)
+        {
+            for (int ix = 0; ix < bank.Count; ix++)
+            {
+                if (bank[ix].setName == nameCheck)
+                {
+                    accNum = ix;
+                }
+            }
+            if (accNum != -1)
+            {
+                Console.WriteLine("Balance: {0}", bank[accNum].balance);
+            }                          
+        }
+
+        public void ListShuffelPlusWithdraw(List<Bank> bank, string nameCheck, int accNum)
+        {
+
+            for (int ix = 0; ix < bank.Count; ix++)
+            {
+                if (bank[ix].setName == nameCheck)
+                {
+                    accNum = ix;
+                }
+            }
+            if (accNum != -1)
+            {
+                bank[accNum].Withdraw();
+            }
+            else
+            {
+                Console.WriteLine("Insufficient funds!");
+            }
+        }
+
+        public void ListShuffelPlusDeposit(List<Bank> bank, string nameCheck, int accNum)
+        {            
+            for (int ix = 0; ix < bank.Count; ix++)
+            {
+                if (bank[ix].setName == nameCheck)
+                {
+                    accNum = ix;
+                }
+            }
+            if (accNum != -1)
+            {
+                bank[accNum].Deposit();
+            }
+            else
+            {
+                Console.WriteLine("Account not found!");
+            }            
+        }
+           
+        public void ListShuffelPlusTransferToOtherPerson(List<Bank> bank, string nameCheck, int accNum)
+        {
+            
+            for (int ix = 0; ix < bank.Count; ix++)
+            {
+                if (bank[ix].setName == nameCheck)
+                {
+                    accNum = ix;
+                }
+            }
+            if (accNum != -1)
+            {
+                DateTime dateTime = DateTime.Now;
+
+                bool userTransferNameCheck = false;
+
+                do
+                {
+                    bank[accNum].SetRecipientName();
+
+                    for (int ixUser = 0; ixUser < bank.Count; ixUser++)
+                    {
+                        if (bank[ixUser].setName == bank[accNum].userNameToTransfer)
+                        {
+                            userTransferNameCheck = true;
+                        }
+                    }
+                    if (userTransferNameCheck == false)
+                    {
+                        Console.WriteLine("Account with that name don't exist! Enter other account name. Enter 'quit' to quit.");
+                    }
+                    else if (bank[accNum].setName == bank[accNum].userNameToTransfer)
+                    {
+                        Console.WriteLine("You can't transfer money to Yourself! Enter other account name.");
+                        userTransferNameCheck = false;
+                    }
+                } while (userTransferNameCheck == false);
+
+                bank[accNum].TransferToOtherUser();
+
+                if (bank[accNum].transferAction == true)
+                {
+                    int accUserNum = -1;
+                    for (int ixUser = 0; ixUser < bank.Count; ixUser++)
+                    {
+                        if (bank[ixUser].setName == bank[accNum].userNameToTransfer)
+                        {
+                            accUserNum = ixUser;
+                        }
+                    }
+                    if (accUserNum != -1)
+                    {
+
+                        bank[accUserNum].balance += bank[accNum].transferAmount;
+
+                        DateTime dateTime1 = DateTime.Now;
+
+                        bank[accUserNum].DepositHistory.Add(bank[accNum].transferAmount);
+                        bank[accUserNum].DateDepositHistory.Add(dateTime1);
+
+                        bank[accNum].transferAction = false;
+                    }
+                }
+            }           
+        }       
         public override string ToString()
         {
-            return ". Name: " + setName + ", Password: "+ setPassword + ", Balance: " + balance + ", Account Block(true=blocked): " + accountBlock + ", Credit(true=the credit has been taken): " + creditCheck;
+            return ". Name: " + setName + ", Password: " + setPassword + ", Balance: " + balance + ", Account Block(true=blocked): " + accountBlock + ", Credit(true=the credit has been taken): " + creditCheck;
         }
     }
+
+    static public class MessagePrinter
+    {
+        static public void UserMenu()
+        {
+            Console.WriteLine("Press 1. To deposit: \nPress 2. To withdraw: \nPress 3. To check balance.\n" +
+                              "Press 4. To check transaction history.\nPress 5. To make transfer to other user " +
+                              "\nPress 6. To take credit.\nPress 7. To repay credit\nPress 8. To log out and quit to main menu");
+        }
+        static public void AdminMenu()
+        {
+            Console.WriteLine("\nYou are in Admin Menu!\n\nPress 1. To lock user account\n" +
+                "Press 2. To unlock user accountn\nPress 3. To print all bank accounts\nPress 4. To quit.");
+        }
+        static public void BaseMenu()
+        {
+            Console.WriteLine("Press 1. To create account. \nPress 2. To log in as user. \nPress 3. To log in as admin. \nPress 4. To quit.\n");
+            Console.Write("Select function: ");
+        }       
+    }
+
     class Program
     {
         static void Main(string[] args)
@@ -211,41 +412,39 @@ namespace BankSystem
 
             do
             {
-                Console.WriteLine("Press 1. To create account. \nPress 2. To log in as user. \nPress 3. To log in as admin. \nPress 4. To quit.\n");
-                Console.Write("Select function: ");
+                MessagePrinter.BaseMenu();
                 int menuChoose = Convert.ToInt32(Console.ReadLine());
 
                 switch (menuChoose)
                 {
                     case 1:
-                        string setName;
-                        bool nameDuplicatCheck = false;
-
-                        do
                         {
-                            nameDuplicatCheck = false;
-                            Console.Write("\nEnter name: ");
-                            setName = Console.ReadLine();
-                            foreach (Bank banks in bank)
+                            string setName;
+                            bool nameDuplicatCheck = false;
+                            do
                             {
-                                if (banks.setName == setName)
-                                {
-                                    Console.WriteLine("Name already exist - enter other name!");
-                                    nameDuplicatCheck = true;
-                                    break;
-                                }
-                            }
-                        } while (nameDuplicatCheck == true);
-                        
-                        //Console.Write("\nEnter name: ");
-                        //string setName = Console.ReadLine();
-                        Console.Write("Enter password: ");
-                        string setPassword = Console.ReadLine();
-                        double balanceSettoZero = 0;
-                        double CreditSettoZero = 0;
-                        bank.Add(new Bank(balanceSettoZero, setName, setPassword, false, CreditSettoZero, false));
-                        Console.WriteLine("\nBank Account Added!\n");
+                                nameDuplicatCheck = false;
+                                Console.Write("\nEnter name: ");
+                                setName = Console.ReadLine();
 
+                                foreach (Bank banks in bank)
+                                {
+                                    if (banks.setName == setName)
+                                    {
+                                        Console.WriteLine("Name already exist - enter other name!");
+                                        nameDuplicatCheck = true;
+                                        break;
+                                    }
+                                }
+                            } while (nameDuplicatCheck == true);
+
+                            Console.Write("Enter password: ");
+                            string setPassword = Console.ReadLine();
+                            double balanceSettoZero = 0;
+                            double CreditSettoZero = 0;
+                            bank.Add(new Bank(balanceSettoZero, setName, setPassword, false, CreditSettoZero, false));
+                            Console.WriteLine("\nBank Account Added!\n");
+                        }
                         break;
 
                     case 2:
@@ -256,18 +455,13 @@ namespace BankSystem
                         }
                         Console.Write("\nEnter name: ");
                         string nameCheck = Console.ReadLine();
-                           
-                        
                         Console.Write("Enter password: ");
                         string passowrdCheck = Console.ReadLine();
 
                         bool accountChecker = true;
 
-
-                        
-
                         for (int ix = 0; ix < bank.Count; ix++)
-                        {                           
+                        {
                             if ((bank[ix].setName == nameCheck) && (bank[ix].setPassword == passowrdCheck) && (bank[ix].accountBlock == false))
                             {
                                 bank[ix].userIsLogged = true;
@@ -286,8 +480,7 @@ namespace BankSystem
                                         }
                                     }
 
-                                    Console.WriteLine("Press 1. To deposit: \nPress 2. To withdraw: \nPress 3. To check balance.\n" +
-                                                "Press 4. To check transaction history.\nPress 5. To make transfer to other user \nPress 6. To take credit.\nPress 7. To repay credit\nPress 8. To log out and quit to main menu");
+                                    MessagePrinter.UserMenu();                                    
                                     int loginMenuChoose = Convert.ToInt32(Console.ReadLine());
                                     Console.WriteLine("\n");
 
@@ -295,196 +488,68 @@ namespace BankSystem
                                     {
                                         case 1:
                                             {
+
+                                                int accNumBasic = 0;
                                                 int accNum = -1;
-                                                for (ix = 0; ix < bank.Count; ix++)
-                                                {
-                                                    if (bank[ix].setName == nameCheck)
-                                                    {
-                                                        accNum = ix;
-                                                    }
-                                                }
-                                                if (accNum != -1)
-                                                {
-                                                    bank[accNum].Deposit();
-                                                }
-                                                else
-                                                {
-                                                    Console.WriteLine("Account not found!");
-                                                }
+                                                bank[accNumBasic].ListShuffelPlusDeposit(bank, nameCheck, accNum);
                                             }
                                             break;
 
                                         case 2:
                                             {
+
+                                                int accNumBasic = 0;
                                                 int accNum = -1;
-                                                for (ix = 0; ix < bank.Count; ix++)
-                                                {
-                                                    if (bank[ix].setName == nameCheck)
-                                                    {
-                                                        accNum = ix;
-                                                    }
-                                                }
-                                                if (accNum != -1)
-                                                {
-                                                    bank[accNum].Withdraw();
-                                                }
-                                                else
-                                                {
-                                                    Console.WriteLine("Insufficient funds!");
-                                                }
+                                                bank[accNumBasic].ListShuffelPlusWithdraw(bank, nameCheck, accNum);
                                             }
                                             break;
 
                                         case 3:
                                             {
-                                                int accNum = -1;
-                                                for (ix = 0; ix < bank.Count; ix++)
-                                                {
-                                                    if (bank[ix].setName == nameCheck)
-                                                    {
-                                                        accNum = ix;
-                                                    }
-                                                }
-                                                if (accNum != -1)
-                                                {
-                                                    Console.WriteLine("Balance: {0}", bank[accNum].balance);
-                                                }
 
+                                                int accNumBasic = 0;
+                                                int accNum = -1;
+                                                bank[accNumBasic].ListShuffelPlusBalanceGet(bank, nameCheck, accNum);
                                             }
                                             break;
 
                                         case 4:
                                             {
+                                                int accNumBasic = 0;
                                                 int accNum = -1;
-                                                for (ix = 0; ix < bank.Count; ix++)
-                                                {
-                                                    if (bank[ix].setName == nameCheck)
-                                                    {
-                                                        accNum = ix;
-                                                    }
-                                                }
-                                                if (accNum != -1)
-                                                {
-                                                    bank[accNum].History();
-                                                }
+                                                bank[accNumBasic].ListShuffelPlusHistory(bank, nameCheck, accNum);
                                             }
                                             break;
 
                                         case 5:
                                             {
+                                                int accNumBasic = 0;
                                                 int accNum = -1;
-                                                for (ix = 0; ix < bank.Count; ix++)
-                                                {
-                                                    if (bank[ix].setName == nameCheck)
-                                                    {
-                                                        accNum = ix;
-                                                    }
-                                                }
-                                                if (accNum != -1)
-                                                {
-                                                    DateTime dateTime = DateTime.Now;
-
-                                                    bool userTransferNameCheck = false;
-
-                                                    do
-                                                    {
-                                                        bank[accNum].SetRecipientName();                                                        
-                                                        
-                                                        for (int ixUser = 0; ixUser < bank.Count; ixUser++)
-                                                        {
-                                                            if (bank[ixUser].setName == bank[accNum].userNameToTransfer)
-                                                            {
-                                                                userTransferNameCheck = true;
-                                                            }
-                                                        }
-                                                        if(userTransferNameCheck == false)
-                                                        {
-                                                            Console.WriteLine("Account with that name don't exist! Enter other account name. Enter 'quit' to quit.");
-                                                        }
-                                                        else if(bank[accNum].setName == bank[accNum].userNameToTransfer)
-                                                        {
-                                                            Console.WriteLine("You can't transfer money to Yourself! Enter other account name.");
-                                                            userTransferNameCheck = false;
-                                                        }                                                        
-                                                     } while (userTransferNameCheck == false);
-
-                                                    bank[accNum].TransferToOtherUser();                                                       
-
-                                                    if (bank[accNum].transferAction == true)
-                                                    {
-                                                        int accUserNum = -1;
-                                                        for (int ixUser = 0; ixUser < bank.Count; ixUser++)
-                                                        {
-                                                            if (bank[ixUser].setName == bank[accNum].userNameToTransfer)
-                                                            {
-                                                                accUserNum = ixUser;
-                                                            }
-                                                        }
-                                                        if (accUserNum != -1)
-                                                        {
-
-                                                            bank[accUserNum].balance += bank[accNum].transferAmount;
-
-                                                            DateTime dateTime1 = DateTime.Now;
-
-                                                            bank[accUserNum].DepositHistory.Add(bank[accNum].transferAmount);
-                                                            bank[accUserNum].DateDepositHistory.Add(dateTime1);
-
-                                                            bank[accNum].transferAction = false;
-                                                        }
-                                                    }
-                                                }
+                                                bank[accNumBasic].ListShuffelPlusTransferToOtherPerson(bank, nameCheck, accNum);
                                             }
                                             break;
 
                                         case 6:
                                             {
+                                                int accNumBasic = 0;
                                                 int accNum = -1;
-                                                for (ix = 0; ix < bank.Count; ix++)
-                                                {
-                                                    if (bank[ix].setName == nameCheck)
-                                                    {
-                                                        accNum = ix;
-                                                    }
-                                                }
-                                                if (accNum != -1)
-                                                {
-                                                    bank[accNum].Credit();
-                                                }
-                                                break;
+                                                bank[accNumBasic].ListShuffelPlusCreditTake(bank, nameCheck, accNum);
                                             }
+                                            break;
 
                                         case 7:
                                             {
+                                                int accNumBasic = 0;
                                                 int accNum = -1;
-                                                for (ix = 0; ix < bank.Count; ix++)
-                                                {
-                                                    if (bank[ix].setName == nameCheck)
-                                                    {
-                                                        accNum = ix;
-                                                    }
-                                                }
-                                                if (accNum != -1)
-                                                {
-                                                    bank[accNum].Creditpayment();
-                                                }
-                                                break;
+                                                bank[accNumBasic].ListShuffelPlusCreditPayment(bank, nameCheck, accNum);
                                             }
+                                            break;
                                         case 8:
                                             {
+                                                int accNumBasic = 0;
                                                 int accNum = -1;
-                                                for (ix = 0; ix < bank.Count; ix++)
-                                                {
-                                                    if (bank[ix].setName == nameCheck)
-                                                    {
-                                                        accNum = ix;
-                                                    }
-                                                }
-                                                if (accNum != -1)
-                                                {
-                                                    bank[accNum].userIsLogged = false;
-                                                }
-                                                loginMenu = false;                                             
+                                                bank[accNumBasic].ListShuffelPlusLogOut(bank, nameCheck, accNum);
+                                                loginMenu = false;
                                             }
                                             break;
                                     }
@@ -496,7 +561,7 @@ namespace BankSystem
                                 accountChecker = false;
                             }
                         }
-                        if(accountChecker == true)
+                        if (accountChecker == true)
                         {
                             Console.WriteLine("Account is not found or name/password is wrong!");
                         }
@@ -522,7 +587,7 @@ namespace BankSystem
                             adminMenuquit = true;
                             do
                             {
-                                Console.WriteLine("\nYou are in Admin Menu!\nPress 1. To lock user account\nPress 2. To unlock user accountn\nPress 3. To print all bank accounts\nPress 4. To quit.");
+                                MessagePrinter.AdminMenu();
                                 int adminChoose = Convert.ToInt32(Console.ReadLine());
 
                                 switch (adminChoose)
@@ -608,21 +673,19 @@ namespace BankSystem
                                     case 3:
                                         {
                                             int x = 1;
-                                            foreach(Bank banks in bank)
+                                            foreach (Bank banks in bank)
                                             {
                                                 Console.Write(x);
                                                 x++;
                                                 Console.WriteLine(banks.ToString());
                                             }
                                         }
-
                                         break;
 
                                     case 4:
                                         {
                                             adminMenuquit = false;
                                         }
-
                                         break;
                                 }
                             } while (adminMenuquit == true);
