@@ -337,12 +337,14 @@ namespace BankSystem
                     }
                     if (userTransferNameCheck == false)
                     {
-                        Console.WriteLine("Account with that name don't exist! Enter other account name.");
+                        Console.WriteLine("Account with that name don't exist!");
+                        return;
                     }
                     else if (bank[accNum].setName == bank[accNum].userNameToTransfer)
                     {
-                        Console.WriteLine("You can't transfer money to Yourself! Enter other account name.");
+                        Console.WriteLine("You can't transfer money to Yourself!");
                         userTransferNameCheck = false;
+                        return;
                     }
                 } while (userTransferNameCheck == false);
 
